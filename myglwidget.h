@@ -14,6 +14,15 @@ private:
     QMatrix4x4 pMatrix;
     Schlange * snake;
 
+    //Buffer
+    QOpenGLBuffer vbo;
+    QOpenGLBuffer ibo;
+    GLfloat *vboData;
+    GLuint *iboData;
+    unsigned int vboLength;
+    unsigned int iboLength;
+
+
 public:
     explicit MyGLWidget(QWidget *parent = 0);
     void initializeGL();

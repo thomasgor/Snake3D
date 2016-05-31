@@ -18,17 +18,20 @@ private:
     unsigned int laenge=0;
     QOpenGLShaderProgram shaderProgram;
 
+    QMatrix4x4 mvMatrix;
+
+
     //Buffer
     QOpenGLBuffer vbo;
     QOpenGLBuffer ibo;
-    GLfloat *vboData;
+    GLfloat* vboData;
     GLuint* iboData;
     unsigned int vboLength;
     unsigned int iboLength;
 
 public:
     void initShader();
-    void render();
+    void render(QMatrix4x4 pMatrix);
     void loadModel();
 
 
