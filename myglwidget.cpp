@@ -17,6 +17,8 @@ void MyGLWidget::initializeGL(){
     snake = new Schlange();
 }
 void MyGLWidget::resizeGL(int width, int height){
+    glViewport(0.0,0.0,width,height);
+
     glDraw();
 }
 

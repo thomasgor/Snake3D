@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
-    <height>589</height>
+    <width>800</width>
+    <height>820</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,9 +19,15 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>500</width>
-      <height>500</height>
+      <width>800</width>
+      <height>800</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="minimumSize">
      <size>
@@ -31,8 +37,8 @@
     </property>
     <property name="maximumSize">
      <size>
-      <width>500</width>
-      <height>500</height>
+      <width>1920</width>
+      <height>1080</height>
      </size>
     </property>
    </widget>
@@ -42,18 +48,19 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>523</width>
-     <height>21</height>
+     <width>800</width>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHier_ensteht_ein_Men">
     <property name="title">
      <string>Hier ensteht ein Menü</string>
     </property>
-    <addaction name="actionSchlie_en"/>
     <addaction name="actionOptionen"/>
     <addaction name="separator"/>
     <addaction name="actionHighscores"/>
+    <addaction name="actionSchlie_en"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuHier_ensteht_ein_Men"/>
   </widget>

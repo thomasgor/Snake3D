@@ -31,7 +31,6 @@ void Schlange::loadModel()
 
     ModelLoader  model;
     bool res = model.loadObjectFromFile("C:/Users/thomas/Documents/Projekte/Snake3D/models/sphere_low.obj");
-
     bool hasTextures = model.hasTextureCoordinates();
 
     if (res) {
@@ -56,35 +55,43 @@ void Schlange::loadModel()
     vbo.release();
     ibo.release();
 }
+
 void Schlange::render(){
     int attrVertices = 0;
-    int attrTexCoords = 1;
+    int attrTexCoords = 2;
     int unifMatrix = 0;
 
     QMatrix4x4 mvMatrix;
     mvMatrix.setToIdentity();
-    mvMatrix.translate(0.0,0.0,-2.0);
+    mvMatrix.translate(0.0,0.0,-3.0);
+    QVector3D eye(0.0,3.0,6.0);
+    QVector3D center (0.0,0.0,0.0);
+    QVector3D up(0.0,0.0,1.0);
+    mvMatrix.lookAt(eye,center, up);
+    mvMatrix.frustum(-0.5,0.5,-0.5,0.5,0.1,100);
 
     shaderProgram.bind();
     vbo.bind();
     ibo.bind();
 
-    shaderProgram.enableAttributeArray(attrVertices);
-    shaderProgram.enableAttributeArray(attrTexCoords);
 
     shaderProgram.setUniformValue("texture",0);
     shaderProgram.setUniformValue(unifMatrix, mvMatrix);
 
     qtex->bind(0);
 
-    int offset =0;
     size_t stride = 12 * sizeof(GLfloat);
 
+    int offset =0;
     shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, offset, 4, stride);
     offset += 8 * sizeof(GLfloat);
     shaderProgram.setAttributeBuffer(attrTexCoords, GL_FLOAT, offset, 4, stride);
 
-    glDrawElements(GL_TRIANGLES, this->iboLength , GL_UNSIGNED_INT,0);
+    shaderProgram.enableAttributeArray(attrVertices);
+    shaderProgram.enableAttributeArray(attrTexCoords);
+
+
+    glDrawElements(GL_POINTS, this->iboLength , GL_UNSIGNED_INT,0);
 
     vbo.release();
     ibo.release();
