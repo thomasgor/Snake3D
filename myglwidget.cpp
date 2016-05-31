@@ -2,7 +2,6 @@
 
 MyGLWidget::MyGLWidget(QWidget *parent) : QGLWidget(parent)
 {
-    snake = new Schlange();
 }
 
 
@@ -13,6 +12,9 @@ void MyGLWidget::initializeGL(){
 
     glClearDepth(1.0f);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    //Spiel erstellen TODO: Klasse Game mit Schlange, Items, Punkten, alles
+    snake = new Schlange();
 }
 void MyGLWidget::resizeGL(int width, int height){
     glDraw();

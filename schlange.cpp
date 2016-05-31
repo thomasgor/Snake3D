@@ -30,9 +30,9 @@ void Schlange::loadModel()
     vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
     ModelLoader  model;
-    bool res = model.loadObjectFromFile("C:/Users/thomas/Documents/CG/Snake3D/models/sphere_high.obj");
-    bool hasTextures = model.hasTextureCoordinates();
+    bool res = model.loadObjectFromFile("C:/Users/thomas/Documents/Projekte/Snake3D/models/sphere_low.obj");
 
+    bool hasTextures = model.hasTextureCoordinates();
 
     if (res) {
         // Frage zu erwartende Array-Längen ab
