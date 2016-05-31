@@ -17,9 +17,9 @@ private:
     QOpenGLTexture *qtex;
     unsigned int laenge=0;
     QOpenGLShaderProgram shaderProgram;
-
     QMatrix4x4 mvMatrix;
 
+    QList<QVector3D> kontrollPunkte;
 
     //Buffer
     QOpenGLBuffer vbo;
@@ -33,6 +33,7 @@ public:
     void initShader();
     void render(QMatrix4x4 pMatrix);
     void loadModel();
+    void loadBezier();
 
 
 public:

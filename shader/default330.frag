@@ -9,5 +9,7 @@ layout(location = 0)out vec4 fragColor; // must be at 0
 layout(location = 0)in vec4 texC;
 
 void main() {
-    fragColor = texture2D(texture,vec2(texC.x,texC.y));
+    fragColor = vec4(1.0,0.0,0.0,1.0);
+
+    //fragColor = texture2D(texture,vec2(texC.x,texC.y));
 }
