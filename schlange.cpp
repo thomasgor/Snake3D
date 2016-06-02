@@ -61,14 +61,14 @@ void Schlange::loadModel()
 
 void Schlange::loadBezier(){
 
-    iboLength = 6;
+    iboLength = 10;
     vboLength = 6 * 4;
     vboData = new GLfloat[vboLength];
     iboData = new GLuint[iboLength];
 
     //1.Punkt
     vboData[0] = (0.0f);
-    vboData[1]=(0.0f);
+    vboData[1]=(15.0f);
     vboData[2]=(0.0f);
     vboData[3]=(1.0f);
     //2.Punkt
@@ -82,27 +82,35 @@ void Schlange::loadBezier(){
     vboData[10]=(11.0f);
     vboData[11]=(1.0f);
     //4.Punkt
-    vboData[12]=(6.0f);
+    vboData[12]=(12.0f);
     vboData[13]=(10.0f);
     vboData[14]=(14.0f);
     vboData[15]=(1.0f);
     //5.Punkt
     vboData[16]=(12.0f);
-    vboData[17]=(14.0f);
+    vboData[17]=(4.0f);
     vboData[18]=(0.0f);
     vboData[19]=(1.0f);
     //6.Punkt
     vboData[20]=(6.0f);
-    vboData[21]=(3.0f);
+    vboData[21]=(-2.0f);
     vboData[22]=(9.0f);
     vboData[23]=(1.0f);
 
     iboData[0]=(0);
     iboData[1]=(1);
-    iboData[2]=(2);
-    iboData[3]=(3);
-    iboData[4]=(4);
-    iboData[5]=(5);
+
+    iboData[2]=(1);
+    iboData[3]=(2);
+
+    iboData[4]=(2);
+    iboData[5]=(3);
+
+    iboData[6]=(3);
+    iboData[7]=(4);
+
+    iboData[8]=(4);
+    iboData[9]=(5);
 
     qWarning() << ibo.create();
     qWarning() << vbo.create();
@@ -147,7 +155,7 @@ void Schlange::render(QMatrix4x4 pMatrix){
     shaderProgram.enableAttributeArray(attrVertices);
     shaderProgram.enableAttributeArray(attrTexCoords);
 
-    glDrawElements(GL_LINES, this->iboLength , GL_UNSIGNED_INT,0);
+    glDrawElements(GL_LINE_STRIP_ADJACENCY, this->iboLength , GL_UNSIGNED_INT,0);
 
     qtex->release(0);
     vbo.release();

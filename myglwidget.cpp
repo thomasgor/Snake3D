@@ -7,7 +7,7 @@ MyGLWidget::MyGLWidget(QWidget *parent) : QGLWidget(parent)
 
 void MyGLWidget::initializeGL(){
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
 
     glClearDepth(1.0f);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
