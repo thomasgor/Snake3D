@@ -5,6 +5,8 @@
 #include <GL/glut.h>
 #include <QMatrix4x4>
 #include <schlange.h>
+#include <QTimer>
+#include <QVector3D>
 
 class MyGLWidget : public QGLWidget
 {
@@ -13,15 +15,12 @@ class MyGLWidget : public QGLWidget
 private:
     QMatrix4x4 pMatrix;
     Schlange * snake;
+    QTimer *timer;
+    float time=0;
 
-    //Buffer
-    QOpenGLBuffer vbo;
-    QOpenGLBuffer ibo;
-    GLfloat *vboData;
-    GLuint *iboData;
-    unsigned int vboLength;
-    unsigned int iboLength;
-
+    QVector3D eye;
+    QVector3D center;
+    QVector3D up;
 
 public:
     explicit MyGLWidget(QWidget *parent = 0);

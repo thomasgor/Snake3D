@@ -26,14 +26,16 @@ private:
     QOpenGLBuffer ibo;
     GLfloat* vboData;
     GLuint* iboData;
-    unsigned int vboLength;
-    unsigned int iboLength;
+    unsigned int vboLength = 0;
+    unsigned int iboLength = 0;
+    float tmp;
 
 public:
     void initShader();
     void render(QMatrix4x4 pMatrix);
     void loadModel();
     void loadBezier();
+    void generiereBezierCurve();
 
 
 public:

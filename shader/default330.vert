@@ -8,9 +8,11 @@
 layout(location = 0)uniform mat4 matrix;
 layout(location = 1)uniform mat4 pMatrix;
 layout(location = 0)in vec4 vert;
+layout(location = 2)in vec4 col;
 layout(location = 3)in vec4 texCoord;
 layout(location = 0)out vec4 texC;
 void main() {
     gl_Position = pMatrix * matrix * vert;
-    texC = texCoord;
+    //texC = texCoord;
+    texC = col;
 }
