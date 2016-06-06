@@ -8,6 +8,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 #include <modelloader.h>
+#include <QVector3D>
 
 
 class Schlange
@@ -36,6 +37,8 @@ public:
     void loadModel();
     void loadBezier();
     void generiereBezierCurve();
+    QVector3D kubischerBezierPunkt(float t, int i);
+
 
 
 public:

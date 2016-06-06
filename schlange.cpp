@@ -60,6 +60,19 @@ void Schlange::loadModel()
     ibo.release();
 }
 
+QVector3D Schlange::kubischerBezierPunkt(float t, int i){
+    float k1 = (1 - t) * (1 - t) * (1 - t);
+    float k2 = 3 * (1 - t) * (1 - t) * t;
+    float k3 = 3 * (1 - t) * t * t;
+    float k4 = t * t * t;
+
+    QVector3D erg = k1 * kontrollPunkte.at(i) +
+                    k2 * kontrollPunkte.at(i+1) +
+                    k3 * kontrollPunkte.at(i+2) +
+                    k4 * kontrollPunkte.at(i+3);
+    return erg;
+}
+
 void Schlange::loadBezier(){
 
 //    iboLength = 10;
@@ -141,9 +154,9 @@ void Schlange::loadBezier(){
 }
 void Schlange::generiereBezierCurve()
 {
-    float schritt = 0.1;
+    float schritt = 0.001;
 
-    vboLength= (1.0/0.1) * 3 * 6 * 4;
+    vboLength= (1.0/0.1) * 3 * 4 * 11 * 4;
     iboLength= vboLength;
 
     vboData = new GLfloat[vboLength];
@@ -155,46 +168,42 @@ void Schlange::generiereBezierCurve()
     for (int i = 0; i < kontrollPunkte.length() - 3; i+=3){
         for(float t= 0; t < 1; t+=0.1)
         {
-            float k1 = (1 - t) * (1 - t) * (1 - t);
-            float k2 = 3 * (1 - t) * (1 - t) * t;
-            float k3 = 3 * (1 - t) * t * t;
-            float k4 = t * t * t;
 
-            QVector3D erg = k1 * kontrollPunkte.at(i) +
-                            k2 * kontrollPunkte.at(i+1) +
-                            k3 * kontrollPunkte.at(i+2) +
-                            k4 * kontrollPunkte.at(i+3);
+            QVector3D erg = kubischerBezierPunkt(t,i);
+            QVector3D erg1 = kubischerBezierPunkt(t+0.1,i);
 
+            //Mittelpunkt der Schlange
             vboData[vertex_index++] = erg.x();
             vboData[vertex_index++] = erg.y();
             vboData[vertex_index++] = erg.z();
             vboData[vertex_index++] = 1.0;
-
-            //Normale / Tangente
-            QVector3D erg_normal = erg.normalized();
-            vboData[vertex_index++] = erg_normal.x();
-            vboData[vertex_index++] = erg_normal.y();
-            vboData[vertex_index++] = erg_normal.z();
-            vboData[vertex_index++] = 1.0;
-
-
-//            int segmente = 5;
-//            float r = 0.5;
-//            for(int n =0; n <= segmente; n++)
-//            {
-//                float alpha = n * M_2_PI  / float(segmente);
-//                vboData[vertex_index++] = erg.x() * cos(alpha) * r;
-//                vboData[vertex_index++] = erg.y() * sin(alpha) * r;
-//                vboData[vertex_index++] = erg.z();
-//                vboData[vertex_index++] = 1.0;
-//                iboData[index_index] = index_index++;
-
-//            }
-            //qDebug() << vertex_index;
-            //qDebug() << index_index;
-            //qDebug() << erg;
-
             iboData[index_index] = index_index++;
+
+            //Normale / Tangente / binormale
+            QVector3D erg_tangente  =  erg1 - erg;
+            erg_tangente*= 1./erg_tangente.length();
+            QVector3D erg_normal = erg.normalized();
+            QVector3D erg_binormal = erg.normalized().crossProduct(erg_tangente, erg_normal);
+            erg_binormal *= 1./erg_binormal.length();
+
+            qDebug() << erg_tangente.length();
+            qDebug() << erg_normal.length();
+            qDebug() << erg_binormal.length();
+
+            //Generiere das Mesh
+            int segmente = 10;
+            float r = 0.5;
+            for(int n =0; n <= segmente; n++)
+            {
+                float alpha = n * 2 * M_PI  / float(segmente);
+                QVector3D tmp = erg + (erg_normal * cos(alpha) + erg_binormal * sin(alpha)) * r;
+                vboData[vertex_index++] = tmp.x();
+                vboData[vertex_index++] = tmp.y();
+                vboData[vertex_index++] = tmp.z();
+                vboData[vertex_index++] = 1.0;
+                iboData[index_index] = index_index++;
+
+            }
         }
     }
 
@@ -240,7 +249,7 @@ void Schlange::render(QMatrix4x4 pMatrix){
     shaderProgram.setAttributeValue(attrColor, QVector4D(0.0,1.0,0.0,1.0));
 
     int offset = 0;
-    size_t stride = 8 * sizeof(GLfloat);
+    size_t stride = 4 * sizeof(GLfloat);
 
     shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, offset, 4, stride);
     //offset += 8 * sizeof(GLfloat);
@@ -252,9 +261,9 @@ void Schlange::render(QMatrix4x4 pMatrix){
     glDrawElements(GL_LINE_STRIP, this->iboLength , GL_UNSIGNED_INT,0);
 
     //Paint Normals
-    shaderProgram.setAttributeValue(attrColor, QVector4D(1.0,0.0,0.0,1.0));
-    shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 4 * sizeof(GLfloat), 4, stride);
-    glDrawElements(GL_POINTS, this->iboLength , GL_UNSIGNED_INT,0);
+    //shaderProgram.setAttributeValue(attrColor, QVector4D(1.0,0.0,0.0,1.0));
+    //shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 4 * sizeof(GLfloat), 4, stride);
+    //glDrawElements(GL_POINTS, this->iboLength , GL_UNSIGNED_INT,0);
 
     //Paint Zylinder
     //shaderProgram.setAttributeValue(attrColor, QVector4D(1.0,1.0,0.0,1.0));
