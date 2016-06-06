@@ -16,7 +16,7 @@ Schlange::Schlange()
     //shaderProgram.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/shader/bezier330.geom");
     shaderProgram.link();
 
-    qtex = new QOpenGLTexture(QImage(":/textures/schlange.jpg").mirrored());
+    qtex = new QOpenGLTexture(QImage(":/textures/schlange2.jpg").mirrored());
     qtex->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     qtex->setMagnificationFilter(QOpenGLTexture::Linear);
 
@@ -74,73 +74,6 @@ QVector3D Schlange::kubischerBezierPunkt(float t, int i){
 }
 
 void Schlange::loadBezier(){
-
-//    iboLength = 10;
-//    vboLength = 6 * 4;
-//    vboData = new GLfloat[vboLength];
-//    iboData = new GLuint[iboLength];
-
-//    //1.Punkt
-//    vboData[0] = (0.0f);
-//    vboData[1]=(15.0f);
-//    vboData[2]=(0.0f);
-//    vboData[3]=(1.0f);
-//    //2.Punkt
-//    vboData[4]=(5.0f);
-//    vboData[5]=(11.0f);
-//    vboData[6]=(7.0f);
-//    vboData[7]=(1.0f);
-//    //3.Punkt
-//    vboData[8]=(9.0f);
-//    vboData[9]=(15.0f);
-//    vboData[10]=(11.0f);
-//    vboData[11]=(1.0f);
-//    //4.Punkt
-//    vboData[12]=(12.0f);
-//    vboData[13]=(10.0f);
-//    vboData[14]=(14.0f);
-//    vboData[15]=(1.0f);
-//    //5.Punkt
-//    vboData[16]=(12.0f);
-//    vboData[17]=(4.0f);
-//    vboData[18]=(0.0f);
-//    vboData[19]=(1.0f);
-//    //6.Punkt
-//    vboData[20]=(6.0f);
-//    vboData[21]=(-2.0f);
-//    vboData[22]=(9.0f);
-//    vboData[23]=(1.0f);
-
-//    iboData[0]=(0);
-//    iboData[1]=(1);
-
-//    iboData[2]=(1);
-//    iboData[3]=(2);
-
-//    iboData[4]=(2);
-//    iboData[5]=(3);
-
-//    iboData[6]=(3);
-//    iboData[7]=(4);
-
-//    iboData[8]=(4);
-//    iboData[9]=(5);
-
-//    qWarning() << ibo.create();
-//    qWarning() << vbo.create();
-
-//    ibo.bind();
-//    vbo.bind();
-
-//    ibo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-//    vbo.setUsagePattern(QOpenGLBuffer::StaticDraw);
-
-//    vbo.allocate(vboData, sizeof(GLfloat) * vboLength);
-//    ibo.allocate(iboData, sizeof(GLuint) * iboLength);
-
-//    vbo.release();
-//    ibo.release();
-
     kontrollPunkte.append( QVector3D(-1.0, 0.5, 2.0));
     kontrollPunkte.append( QVector3D(-4.0, 3.0, 3.0));
     kontrollPunkte.append( QVector3D(-2.5, 5.5, 4.0));
@@ -148,15 +81,19 @@ void Schlange::loadBezier(){
     kontrollPunkte.append( QVector3D(1.5, 5.5, 0.0));
     kontrollPunkte.append( QVector3D(3.0, 3.0, -2.0));
     kontrollPunkte.append( QVector3D(5.5, 4.5, -4.0));
-    kontrollPunkte.append( QVector3D(8.0, 6.0, -3.0));
-    kontrollPunkte.append( QVector3D(8.0, 3.0, 1.0));
-    kontrollPunkte.append( QVector3D(5.0,0.5,3.0));
+    kontrollPunkte.append( QVector3D(8.0, 6.0, -2.0));
+    kontrollPunkte.append( QVector3D(8.0, 6.0, 1.0));
+    kontrollPunkte.append( QVector3D(7.0,0.5,3.0));
 }
+
 void Schlange::generiereBezierCurve()
 {
-    float schritt = 0.001;
+    double schritt = 0.01;
+    qWarning() << "Schrittweite: " << schritt;
+    int segmente = 20;
+    float r = 0.5;
 
-    vboLength= (1.0/0.1) * 3 * 4 * 11 * 4;
+    vboLength= (1.0/schritt) * 3 * 4 * (segmente) * 4;
     iboLength= vboLength;
 
     vboData = new GLfloat[vboLength];
@@ -165,35 +102,29 @@ void Schlange::generiereBezierCurve()
 
     unsigned int vertex_index = 0;
     unsigned int index_index = 0;
+    unsigned int aktuellerPunkt = 0;
     for (int i = 0; i < kontrollPunkte.length() - 3; i+=3){
-        for(float t= 0; t < 1; t+=0.1)
+        for(float t= 0; t < 1; t+=schritt)
         {
-
+            //Interpolierte Bezier Punkte  -> Mittelpunkte der Schlange
             QVector3D erg = kubischerBezierPunkt(t,i);
-            QVector3D erg1 = kubischerBezierPunkt(t+0.1,i);
+            QVector3D erg1 = kubischerBezierPunkt(t+schritt,i);
 
-            //Mittelpunkt der Schlange
-            vboData[vertex_index++] = erg.x();
-            vboData[vertex_index++] = erg.y();
-            vboData[vertex_index++] = erg.z();
-            vboData[vertex_index++] = 1.0;
-            iboData[index_index] = index_index++;
-
-            //Normale / Tangente / binormale
+            //Normale / Tangente / binormale -> Lokales KoordinatenSystem
             QVector3D erg_tangente  =  erg1 - erg;
-            erg_tangente*= 1./erg_tangente.length();
             QVector3D erg_normal = erg.normalized();
-            QVector3D erg_binormal = erg.normalized().crossProduct(erg_tangente, erg_normal);
+            //QVector3D erg_binormal = erg.normalized().crossProduct(erg_tangente, erg_normal);
+            QVector3D erg_binormal = erg.crossProduct(erg_tangente, erg_normal);
+
+
+            //Vektoren auf Länge 1 bringen
+            erg_tangente *= 1./erg_tangente.length();
             erg_binormal *= 1./erg_binormal.length();
 
-            qDebug() << erg_tangente.length();
-            qDebug() << erg_normal.length();
-            qDebug() << erg_binormal.length();
-
-            //Generiere das Mesh
-            int segmente = 10;
-            float r = 0.5;
-            for(int n =0; n <= segmente; n++)
+            //Vertex und Index Einträge für das Mesh generieren
+            //TODO Hier sollten noch die NOrmalen der Punkte eingespeichert werden
+            //TODO Wahrscheinlich werden hier auch viel zu viele Dreiecke generiert
+            for(int n =0; n < segmente; n++)
             {
                 float alpha = n * 2 * M_PI  / float(segmente);
                 QVector3D tmp = erg + (erg_normal * cos(alpha) + erg_binormal * sin(alpha)) * r;
@@ -201,14 +132,30 @@ void Schlange::generiereBezierCurve()
                 vboData[vertex_index++] = tmp.y();
                 vboData[vertex_index++] = tmp.z();
                 vboData[vertex_index++] = 1.0;
-                iboData[index_index] = index_index++;
 
+                //Zwei dreiecke Speichern. Das ergibt ein Viereck
+                iboData[index_index++] = aktuellerPunkt;
+                iboData[index_index++] = aktuellerPunkt + segmente;
+                iboData[index_index++] = aktuellerPunkt + 1;
+
+                iboData[index_index++] = aktuellerPunkt +1;
+                iboData[index_index++] = aktuellerPunkt + segmente;
+                iboData[index_index++] = aktuellerPunkt + segmente + 1;
+                aktuellerPunkt++;
+
+                //WENN MAN NUR DIE PUNKTE SEHEN MÖCHTE +  GL_POINTS aktivieren
+                //iboData[index_index] = index_index++;
             }
+
         }
     }
 
-    qWarning() << ibo.create();
-    qWarning() << vbo.create();
+
+    qWarning() << "Vertex Größe:" << vertex_index;
+    qWarning() << "Index Größe:" << index_index;
+
+    qWarning() << "Erstellung des IBO: " << ibo.create();
+    qWarning() << "Erstellung des VBO: " << vbo.create();
 
     ibo.bind();
     vbo.bind();
@@ -221,14 +168,13 @@ void Schlange::generiereBezierCurve()
 
     vbo.release();
     ibo.release();
-
 }
 void Schlange::render(QMatrix4x4 pMatrix){
 
     mvMatrix.setToIdentity();
 
-    mvMatrix.translate(-2.0,-3.0,-13.0);
-    //mvMatrix.rotate(tmp/2,0.0,1.0,0.0);
+    //Temporäre Animation
+    mvMatrix.translate(-2.0,-1.0,-13.0);
     mvMatrix.rotate(tmp/2,1.0,0.0,0.0);
     tmp ++;
 
@@ -252,23 +198,14 @@ void Schlange::render(QMatrix4x4 pMatrix){
     size_t stride = 4 * sizeof(GLfloat);
 
     shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, offset, 4, stride);
-    //offset += 8 * sizeof(GLfloat);
-    //shaderProgram.setAttributeBuffer(attrTexCoords, GL_FLOAT, offset, 4, stride);
+    //offset += 4 * sizeof(GLfloat);
+    shaderProgram.setAttributeBuffer(attrTexCoords, GL_FLOAT, offset, 4, stride);
 
     shaderProgram.enableAttributeArray(attrVertices);
-    //shaderProgram.enableAttributeArray(attrTexCoords);
+    shaderProgram.enableAttributeArray(attrTexCoords);
 
-    glDrawElements(GL_LINE_STRIP, this->iboLength , GL_UNSIGNED_INT,0);
-
-    //Paint Normals
-    //shaderProgram.setAttributeValue(attrColor, QVector4D(1.0,0.0,0.0,1.0));
-    //shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 4 * sizeof(GLfloat), 4, stride);
-    //glDrawElements(GL_POINTS, this->iboLength , GL_UNSIGNED_INT,0);
-
-    //Paint Zylinder
-    //shaderProgram.setAttributeValue(attrColor, QVector4D(1.0,1.0,0.0,1.0));
-    //shaderProgram.setAttributeBuffer(attrVertices, GL_FLOAT, 8 * sizeof(GLfloat), 4, stride);
-    //glDrawElements(GL_POINTS, this->iboLength , GL_UNSIGNED_INT,0);
+    //FÜR DIE FLÄCHE GL_TRIANGLES VERWENDEN, GL_LINES FÜR DAS MESH
+    glDrawElements(GL_TRIANGLES, this->iboLength , GL_UNSIGNED_INT,0);
 
     qtex->release(0);
     vbo.release();

@@ -13,6 +13,6 @@ layout(location = 3)in vec4 texCoord;
 layout(location = 0)out vec4 texC;
 void main() {
     gl_Position = pMatrix * matrix * vert;
-    //texC = texCoord;
-    texC = col;
+    texC = texCoord;
+    //texC = col;
 }
